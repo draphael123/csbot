@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escalation Service</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Customer Support Query</h1>
+      <p class="subtitle">Get instant answers from documentation</p>
+    </header>
+    
+    <div class="config-section">
+      <label for="api-url">API URL:</label>
+      <input type="text" id="api-url" placeholder="http://localhost:3000" value="http://localhost:3000">
+      <button id="save-config" class="btn-secondary">Save</button>
+    </div>
+    
+    <div class="query-section">
+      <textarea id="query-input" placeholder="Enter your question... (e.g., 'I'm frustrated with the service' or 'How do I get a refund?')" rows="4"></textarea>
+      <button id="query-button" class="btn-primary">Search</button>
+    </div>
+    
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p>Searching...</p>
+    </div>
+    
+    <div id="error" class="error hidden"></div>
+    
+    <div id="results" class="results hidden">
+      <div class="answer-section">
+        <div class="answer-header">
+          <h3>Recommended Response</h3>
+          <span id="tone-badge" class="tone-badge"></span>
+        </div>
+        <div id="answer-text" class="answer-text"></div>
+        <div id="de-escalation-tips" class="de-escalation-tips hidden"></div>
+        <div id="additional-results" class="additional-results hidden"></div>
+      </div>
+      
+      <div id="document-results" class="document-results hidden">
+        <h4>Document References</h4>
+        <div id="results-list"></div>
+      </div>
+      
+      <div id="suggestions" class="suggestions hidden">
+        <h4>Suggestions</h4>
+        <div id="suggestions-list"></div>
+      </div>
+    </div>
+    
+    <div class="quick-queries">
+      <p class="quick-label">Quick queries:</p>
+      <div class="quick-buttons">
+        <button class="quick-btn" data-query="Refund policy">Refund</button>
+        <button class="quick-btn" data-query="Processing time">Time</button>
+        <button class="quick-btn" data-query="How to escalate">Escalate</button>
+        <button class="quick-btn" data-query="Contact information">Contact</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+
