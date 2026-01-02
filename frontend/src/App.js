@@ -7,7 +7,6 @@ import ResultsDisplay from './components/ResultsDisplay';
 const API_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
 
 function App() {
-  const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,7 +55,6 @@ function App() {
         <QueryInterface
           onQuery={handleQuery}
           loading={loading}
-          initialQuery={query}
         />
         
         {error && (
