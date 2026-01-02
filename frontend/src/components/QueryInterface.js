@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './QueryInterface.css';
+import QueryHistory from './QueryHistory';
 
-function QueryInterface({ onQuery, loading, initialQuery = '' }) {
+function QueryInterface({ onQuery, loading, initialQuery = '', history = [], onSelectFromHistory, onClearHistory }) {
   const [query, setQuery] = useState(initialQuery);
 
   const handleSubmit = (e) => {
@@ -38,6 +39,7 @@ function QueryInterface({ onQuery, loading, initialQuery = '' }) {
             className="query-input"
             rows="3"
             disabled={loading}
+            aria-label="Search query input"
           />
           <button
             type="submit"
@@ -62,11 +64,19 @@ function QueryInterface({ onQuery, loading, initialQuery = '' }) {
               }}
               disabled={loading}
             >
-              {quickQuery}
+              <span>{quickQuery}</span>
             </button>
           ))}
         </div>
       </div>
+      
+      {history && history.length > 0 && (
+        <QueryHistory
+          history={history}
+          onSelectQuery={onSelectFromHistory}
+          onClear={onClearHistory}
+        />
+      )}
     </div>
   );
 }

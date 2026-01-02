@@ -1,5 +1,7 @@
 import React from 'react';
 import './ResultsDisplay.css';
+import CopyButton from './CopyButton';
+import ExportButton from './ExportButton';
 
 function ResultsDisplay({ results }) {
   if (!results) return null;
@@ -10,23 +12,33 @@ function ResultsDisplay({ results }) {
   return (
     <div className="results-display">
       <div className="results-header">
-        <h2>Results for: "{query}"</h2>
-        {isIrate && (
-          <div className="irate-indicator">
-            <span className="irate-badge">⚠️ Customer Support Mode</span>
-          </div>
-        )}
+        <div className="results-header-left">
+          <h2>Results for: <span className="query-highlight">"{query}"</span></h2>
+          {isIrate && (
+            <div className="irate-indicator">
+              <span className="irate-badge">⚠️ Customer Support Mode</span>
+            </div>
+          )}
+        </div>
+        <div className="results-header-actions">
+          <ExportButton results={results} />
+        </div>
       </div>
 
       <div className="answer-section">
         <div className={`answer-card ${isIrate ? 'irate-customer' : ''}`}>
           <div className="answer-header">
             <h3>{isIrate ? 'Recommended Response' : 'Answer'}</h3>
-            <span className="tone-badge">{answer?.tone || 'professional'}</span>
+            <div className="answer-header-actions">
+              <span className="tone-badge">{answer?.tone || 'professional'}</span>
+              <CopyButton text={answer?.text || ''} label="answer" />
+            </div>
           </div>
           
           <div className="answer-text">
-            {answer?.text}
+            {answer?.text?.split('\n\n').map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </div>
 
           {answer?.deEscalationTips && (

@@ -1,0 +1,29 @@
+.copy-button {
+  padding: 0.5rem 1rem;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.copy-button:hover {
+  background: #e0e0e0;
+  border-color: #667eea;
+}
+
+.copy-button.copied {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.copy-button:active {
+  transform: scale(0.98);
+}
+

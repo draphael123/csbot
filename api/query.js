@@ -105,6 +105,22 @@ function searchDocument(query, limit = 5) {
 // Format answer specifically for customer support
 function formatAnswerForCustomer(results, query) {
   if (results.length === 0) {
+    const isIrate = detectIrateCustomer(query);
+    if (isIrate) {
+      const emotionalState = detectEmotionalState(query);
+      const acknowledgment = getEmpatheticAcknowledgment(emotionalState, query);
+      return {
+        text: `${acknowledgment}\n\nI want to make sure we address this properly. While I don't have specific documentation for this exact situation, I'd like to connect you with a specialist who can provide personalized assistance and ensure your concerns are fully addressed. Your experience matters to us, and we're committed to finding a solution that works for you.`,
+        tone: 'empathetic',
+        action: 'escalate',
+        deEscalationTips: [
+          'Acknowledge their feelings first - make them feel heard',
+          'Validate their concerns - their feelings are valid',
+          'Offer personalized assistance - not just documentation',
+          'Show commitment to resolution'
+        ]
+      };
+    }
     return {
       text: "I apologize, but I couldn't find specific information about that in our documentation. Let me connect you with a specialist who can assist you further.",
       tone: 'apologetic',
@@ -117,14 +133,26 @@ function formatAnswerForCustomer(results, query) {
   
   // Customize response based on customer tone
   if (isIrate) {
+    const emotionalState = detectEmotionalState(query);
+    const acknowledgment = getEmpatheticAcknowledgment(emotionalState, query);
+    
+    // Extract key information from documentation
+    const docInfo = topResult.text.length > 400 
+      ? topResult.text.substring(0, 400) + '...'
+      : topResult.text;
+    
+    // Create a response that validates first, then provides information
+    const responseText = `${acknowledgment}\n\nI want to help resolve this for you. Here's what I found that might be helpful:\n\n${docInfo}\n\nI know this information might not address everything you're experiencing, and I want to make sure we fully address your concerns. Would you like me to connect you with someone who can provide more personalized assistance and ensure we find a solution that works for you?`;
+    
     return {
-      text: `I understand your frustration, and I want to help resolve this for you. Based on our documentation: ${topResult.text.substring(0, 500)}...`,
+      text: responseText,
       tone: 'empathetic',
       action: 'resolve',
       deEscalationTips: [
-        'Acknowledge their frustration',
-        'Provide clear, actionable information',
-        'Offer to escalate if needed'
+        'Always acknowledge feelings first - make them feel heard and validated',
+        'Provide information as helpful context, not as a replacement for listening',
+        'Offer escalation - show you care about their specific situation',
+        'Use "I" statements to show personal commitment to helping'
       ]
     };
   }
@@ -140,13 +168,68 @@ function formatAnswerForCustomer(results, query) {
 // Detect if customer query indicates frustration
 function detectIrateCustomer(query) {
   const irateKeywords = [
-    'angry', 'furious', 'frustrated', 'upset', 'disappointed',
-    'terrible', 'awful', 'horrible', 'worst', 'unacceptable',
-    'refund', 'cancel', 'complain', 'sue', 'lawyer'
+    'angry', 'furious', 'frustrated', 'upset', 'disappointed', 'annoyed',
+    'terrible', 'awful', 'horrible', 'worst', 'unacceptable', 'ridiculous',
+    'refund', 'cancel', 'complain', 'sue', 'lawyer', 'unhappy', 'dissatisfied',
+    'waste', 'regret', 'hate', 'sucks', 'pathetic', 'useless'
   ];
   
   const queryLower = query.toLowerCase();
   return irateKeywords.some(keyword => queryLower.includes(keyword));
+}
+
+// Detect specific emotional concerns
+function detectEmotionalState(query) {
+  const queryLower = query.toLowerCase();
+  const states = {
+    frustrated: ['frustrated', 'frustrating', 'annoyed', 'annoying'],
+    angry: ['angry', 'furious', 'mad', 'rage'],
+    disappointed: ['disappointed', 'let down', 'expected better'],
+    worried: ['worried', 'concerned', 'anxious', 'nervous'],
+    confused: ['confused', "don't understand", 'unclear', 'not sure']
+  };
+  
+  for (const [state, keywords] of Object.entries(states)) {
+    if (keywords.some(keyword => queryLower.includes(keyword))) {
+      return state;
+    }
+  }
+  return 'frustrated'; // default
+}
+
+// Get empathetic acknowledgment based on emotional state
+function getEmpatheticAcknowledgment(emotionalState, query) {
+  const queryLower = query.toLowerCase();
+  const acknowledgments = {
+    frustrated: [
+      "I completely understand your frustration, and I want you to know that your feelings are completely valid.",
+      "I hear you, and I can absolutely see why this would be frustrating for you.",
+      "Thank you for sharing this with me. I understand how frustrating this situation must be, and I'm here to help."
+    ],
+    angry: [
+      "I can hear how upsetting this is for you, and I want you to know that I take your concerns very seriously.",
+      "I understand you're upset, and you have every right to feel that way. Let me help resolve this for you.",
+      "I hear the frustration in your message, and I want to make sure we address this properly. Your concerns matter to us."
+    ],
+    disappointed: [
+      "I'm truly sorry to hear about your disappointment. I understand this isn't what you expected, and I want to help make it right.",
+      "I can hear how disappointed you are, and I want you to know that we take your experience seriously.",
+      "Thank you for letting us know. I understand your disappointment, and I'm committed to helping resolve this."
+    ],
+    worried: [
+      "I can understand why you'd be concerned about this. Let me help address your worries and provide some clarity.",
+      "I hear your concern, and I want to make sure you have all the information you need to feel comfortable.",
+      "I understand this is worrying for you, and I'm here to help provide answers and reassurance."
+    ],
+    confused: [
+      "I can see why this might be confusing, and I want to make sure we clear this up for you right away.",
+      "I understand the confusion, and I'm here to help clarify things so you have a clear understanding.",
+      "Thank you for asking - I can see why this isn't clear, and I want to make sure you have all the information you need."
+    ]
+  };
+  
+  const stateAcks = acknowledgments[emotionalState] || acknowledgments.frustrated;
+  return stateAcks[Math.floor(Math.random() * stateAcks.length)];
 }
 
 // Generate helpful suggestions
