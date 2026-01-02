@@ -3,7 +3,8 @@ import './App.css';
 import QueryInterface from './components/QueryInterface';
 import ResultsDisplay from './components/ResultsDisplay';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+// Use relative URL for production (Vercel), absolute for development
+const API_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000');
 
 function App() {
   const [query, setQuery] = useState('');

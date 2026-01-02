@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install && cd frontend && npm install",
+  "outputDirectory": "frontend/build",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/query",
+      "destination": "/api/query.js"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/api/health.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
